@@ -1,0 +1,4 @@
+identifier,issue_date,total_amount,rating,maturity_date,total_expected_interest_amount
+L101,2021-05-01,200000,1,2021-08-01,80
+L102,2021-06-01,55000,3,2021-10-01,30
+L103,2021-07-01,100000,2,2021-12-01,50

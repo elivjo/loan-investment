@@ -1,0 +1,6 @@
+loan_identifier,reference_date,type,amount
+L101,2021-05-01,Funding,-100000
+L102,2021-06-03,Funding,-55000
+L103,2021-07-04,Funding,-76000
+L101,2021-08-10,Repayment,100050
+L102,2021-10-03,Repayment,55030

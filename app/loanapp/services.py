@@ -4,6 +4,7 @@ from django.db.models import Sum
 
 from .models import CashFlow, Loan
 from pyxirr import xirr, irr
+from django.core.cache import cache
 
 
 
@@ -132,3 +133,40 @@ class StatService:
         for loan in loans:
             avg += loan[0] * loan[1] / total_inv
         return avg / abs(total_inv)
+
+    @staticmethod
+    def get_total_invested_amount():
+        if cache.get('total_invested_amount'):
+            print('From CACHE')
+            total_invested_amount = cache.get('total_invested_amount', 0)
+        else:
+            try:
+                total_invested_amount = Loan.objects.aggregate(Sum('invested_amount'))['invested_amount__sum']
+                cache.set('total_invested_amount', total_invested_amount)
+                print('From DB')
+            except:
+                print('error')
+
+        return total_invested_amount
+
+    @staticmethod
+    def get_total_loans():
+        total_loans_db = Loan.objects.count()
+        cache.set('total_loans', total_loans_db)
+        total_loans = cache.get('total_loans', 0)
+        return total_loans
+
+    @staticmethod
+    def get_current_invested_amount():
+        current_invested_amount_db = Loan.objects.filter(is_closed=False).aggregate(Sum('invested_amount'))['invested_amount__sum']
+        cache.set('current_invested_amount', current_invested_amount_db)
+        current_invested_amount = cache.get('current_invested_amount', 0)
+        return current_invested_amount
+
+    @staticmethod
+    def get_total_repaid_amount(self):
+        total_repaid_amount_db = CashFlow.objects.filter(type='Repayment').aggregate(Sum('amount'))['amount__sum']
+        cache.set('total_repaid_amount', total_repaid_amount_db)
+        total_repaid_amount = cache.get('total_repaid_amount', 0)
+        return total_repaid_amount
+

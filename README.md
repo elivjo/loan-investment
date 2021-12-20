@@ -18,3 +18,14 @@ Functional Requirements
     - Average Realized IRR
         - Weighted average of realized IRR, using the loan invested amount as weight.
         - Consider only closed loans. 
+
+Non-functional Requirements
+- The application should expose a REST API for the required functionalities.
+    - The application should support authentication and authorization.
+        - 2 types of users:
+            - Investor - Can do anything on the application.
+            - Analyst - Read-only permissions. 
+- The processing of the CSV files should happen asynchronously.
+- The statistics should be stored in a cache. 
+   - Whenever new loans/cash flows arrive, the cache should be invalidated.
+- The project should be set up with the usage of docker and docker-compose.

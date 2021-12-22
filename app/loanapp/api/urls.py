@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import  UploadFileView, LoanView, CashFlowView, StatisticsView
+from .views import  UploadFileView, LoanView, CashFlowView, StatisticsView, CreateToken
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.authtoken import views
 
@@ -8,5 +8,6 @@ urlpatterns = [
     path('cashflow/', CashFlowView.as_view(), name='cashflow'),
     path('upload/', UploadFileView.as_view(), name='upload-file'),
     path('stats/', StatisticsView.as_view(), name='stats'),
+    path('token/', CreateToken.as_view(), name='token'),
 
 ]

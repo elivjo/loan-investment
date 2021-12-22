@@ -39,10 +39,10 @@ class FileServices:
             reference_date = cashflow_type_funding['reference_date'].iloc[0]
             convert_rf_date = datetime.strptime(reference_date, '%Y-%m-%d')
             maturity_date = loan['maturity_date']
-            conveert_m_date = datetime.strptime(maturity_date, '%Y-%m-%d')
+            convert_m_date = datetime.strptime(maturity_date, '%Y-%m-%d')
             amount = cashflow_type_repayment['amount'].values + expexted_interest_amount
             invested_amount_funding = cashflow_type_funding['amount'].values
-            date_list = [conveert_m_date, convert_rf_date]
+            date_list = [convert_m_date, convert_rf_date]
             amount_list = [amount,invested_amount_funding]
             return xirr(date_list, amount_list)
         return 0
@@ -115,8 +115,8 @@ class ViewServices:
         cf_funding_amount = getattr(cf_funding, 'amount')
         cf_repayment_date = getattr(cf_repayment, 'reference_date')
         cf_repayment_amount = getattr(cf_repayment, 'amount')
-        amt = abs(cf_funding_amount) + loan.expected_interest_amount
-        if cf_repayment_amount > amt:
+        expected_amount = abs(cf_funding_amount) + loan.expected_interest_amount
+        if cf_repayment_amount > expected_amount:
 
             amount_list = [cf_funding_amount, cf_repayment_amount]
             date_list = [cf_funding_date, cf_repayment_date]

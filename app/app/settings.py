@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'drf_spectacular',
     'rest_framework.authtoken',
     'loanapp',
 ]
@@ -98,8 +99,18 @@ CACHES = {
 # Token auth setup
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',  # <-- And here
+        'rest_framework.authentication.TokenAuthentication',
     ],
+
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': ' Loan Investment API',
+    'DESCRIPTION': 'Small investment (securitization) APP',
+    'VERSION': '1.0.0',
+    # OTHER SETTINGS
 }
 
 # Password validation

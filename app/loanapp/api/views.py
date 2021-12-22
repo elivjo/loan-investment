@@ -8,7 +8,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 
 from ..models import Loan, CashFlow
-from .serializer import LoanSerializer, CashFlowSerializer, FileUploadSerializer
+from .serializer import LoanSerializer, CashFlowSerializer, FileUploadSerializer, AuthTokenSerializer
 import io, csv, pandas as pd
 from rest_framework import generics, status
 from rest_framework.generics import ListCreateAPIView
@@ -17,7 +17,16 @@ from ..services import FileServices, ViewServices, StatService
 from django.core.cache import cache
 
 from ..tasks import processing_files
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.settings import api_settings
 
+
+class CreateToken(ObtainAuthToken):
+    serializer_class = AuthTokenSerializer
+    renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
+
+    def options(self, request):
+        return Response(status=status.HTTP_201_CREATED)
 
 
 class UploadFileView(generics.CreateAPIView):

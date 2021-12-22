@@ -12,3 +12,4 @@ redis>=3.5
 django-redis >=5.1
 celery>=5.0
 pickle5==0.0.11
+drf-spectacular==0.21.0

@@ -29,3 +29,4 @@ Non-functional Requirements
 - The statistics should be stored in a cache. 
    - Whenever new loans/cash flows arrive, the cache should be invalidated.
 - The project should be set up with the usage of docker and docker-compose.
+    

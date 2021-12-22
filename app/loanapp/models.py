@@ -24,7 +24,6 @@ class Loan(models.Model):
     expected_irr = models.FloatField(null=True, blank=True)
     realized_irr = models.FloatField(null=True, blank=True)
 
-
     def __str__(self):
         return self.identifier
 
@@ -47,7 +46,7 @@ class CashFlow(models.Model):
 
 
 
-@receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def create_auth_token(sender, instance=None, created=False, **kwargs):
-    if created:
-        Token.objects.create(user=instance)
+# @receiver(post_save, sender=settings.AUTH_USER_MODEL)
+# def create_auth_token(sender, instance=None, created=False, **kwargs):
+#     if created:
+#         Token.objects.create(user=instance)

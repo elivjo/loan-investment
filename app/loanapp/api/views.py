@@ -19,6 +19,9 @@ from django.core.cache import cache
 from ..tasks import processing_files
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
+import json
+from django.core import serializers
+from django.forms.models import model_to_dict
 
 
 class CreateToken(ObtainAuthToken):
@@ -37,12 +40,13 @@ class UploadFileView(generics.CreateAPIView):
         with transaction.atomic():
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid()
+            portfolio_id = serializer.validated_data['portfolio'].id
             loan_file = serializer.validated_data['loan_file']
             loan_df = pd.read_csv(loan_file)
             cashflow_file = serializer.validated_data['cashflow_file']
             cashflow_df = pd.read_csv(cashflow_file)
 
-            processing_files.delay(cashflow_df.to_json(), loan_df.to_json())
+            processing_files.delay(cashflow_df.to_json(), loan_df.to_json(), portfolio_id)
 
             return Response({'status': 'uploaded successfully'}, status.HTTP_201_CREATED)
 
@@ -95,17 +99,7 @@ class CashFlowView(APIView):
                 loan_id = request.data['loan']
                 amount_cashflow = float(request.data['amount'])
                 cashflow_type = request.data['type']
-
-                loan = Loan.objects.filter(id=loan_id).first()
-                loan.invested_amount = ViewServices.calculate_investment_amount(loan)
-                loan.expected_interest_amount = ViewServices.calculate_expected_interest_amount(loan)
-                loan.investment_date = ViewServices.calculate_investment_date(loan)
-                loan.is_closed = ViewServices.loan_is_closed(amount_cashflow, loan, loan.expected_interest_amount,
-                                                             cashflow_type)
-                loan.expected_irr = ViewServices.calculate_xirr(loan, cashflow_type)
-                loan.realized_irr = ViewServices.calculate_irr(loan)
-
-                loan.save()
+                ViewServices.create_new_cashflow(loan_id, amount_cashflow, cashflow_type)
 
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -115,14 +109,11 @@ class StatisticsView(APIView):
     permission_classes = (UserPermission, IsAuthenticated,)
 
     def get(self, request, format=None):
-
         total_invested_amount = StatService.get_total_invested_amount()
         total_loans = StatService.get_total_loans()
         current_invested_amount = StatService.get_current_invested_amount()
-        total_repaid_amount = CashFlow.objects.filter(type='Repayment').aggregate(Sum('amount'))['amount__sum']
-        get_avg_realized_irr = StatService.calc_weighted_irr()
-        cache.set('avg_realized_irr', get_avg_realized_irr)
-        avg_realized_irr = cache.get('avg_realized_irr', 0)
+        total_repaid_amount = StatService.get_total_repaid_amount()
+        avg_realized_irr = StatService.get_avg_realized_irr()
 
         data = {
             "total_loans": total_loans,

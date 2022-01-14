@@ -1,7 +1,7 @@
-from  rest_framework import  serializers
-from ..models import Loan, CashFlow
-
 from django.contrib.auth import authenticate
+from rest_framework import serializers
+
+from ..models import Loan, CashFlow, Portfolio
 
 
 class AuthTokenSerializer(serializers.Serializer):
@@ -12,7 +12,6 @@ class AuthTokenSerializer(serializers.Serializer):
     )
 
     def validate(self, attrs):
-
         username = attrs.get('username')
         password = attrs.get('password')
 
@@ -29,12 +28,17 @@ class AuthTokenSerializer(serializers.Serializer):
         attrs['user'] = user
         return attrs
 
+class PortfolioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Portfolio
+        fields = '__all__'
+
 
 class FileUploadSerializer(serializers.Serializer):
-    """Serializing file to upload in application"""
+    """Serializing files to upload in application"""
+    portfolio = serializers.PrimaryKeyRelatedField(queryset=Portfolio.objects.all()) #many=true nqs duam te zgjedhim disa
     loan_file = serializers.FileField()
     cashflow_file = serializers.FileField()
-
 
 
 class LoanSerializer(serializers.ModelSerializer):
@@ -49,7 +53,9 @@ class LoanSerializer(serializers.ModelSerializer):
 
 class CashFlowSerializer(serializers.ModelSerializer):
     """Serializer CashFlow model"""
-    #loan = serializers.CharField()
+
+    # loan = serializers.CharField()
     class Meta:
         model = CashFlow
         fields = "__all__"
+
